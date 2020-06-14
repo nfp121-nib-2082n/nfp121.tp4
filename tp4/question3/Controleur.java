@@ -11,8 +11,8 @@ import java.awt.event.*;
 /**
  * Décrivez votre classe Controleur ici.
  * 
- * @author (votre nom)
- * @version (un numéro de version ou une date)
+ * @author (votre Charbel Abi Rizk)
+ * @version (14/6/2020)
  */
 public class Controleur extends JPanel {
 
@@ -34,31 +34,127 @@ public class Controleur extends JPanel {
 
         setLayout(new GridLayout(2, 1));
         add(donnee);
-        donnee.addActionListener(null /* null est à remplacer */);
+        donnee.addActionListener(new JButtonObserver());
         JPanel boutons = new JPanel();
         boutons.setLayout(new FlowLayout());
-        boutons.add(push);  push.addActionListener(null /* null est à remplacer */);
-        boutons.add(add);   add.addActionListener(null /* null est à remplacer */);
-        boutons.add(sub);   sub.addActionListener(null /* null est à remplacer */);
-        boutons.add(mul);   mul.addActionListener(null /* null est à remplacer */);
-        boutons.add(div);   div.addActionListener(null /* null est à remplacer */);
-        boutons.add(clear); clear.addActionListener(null /* null est à remplacer */);
+        boutons.add(push);  push.addActionListener(new JButtonObserver());
+        boutons.add(add);   add.addActionListener(new JButtonObserver());
+        boutons.add(sub);   sub.addActionListener(new JButtonObserver());
+        boutons.add(mul);   mul.addActionListener(new JButtonObserver());
+        boutons.add(div);   div.addActionListener(new JButtonObserver());
+        boutons.add(clear); clear.addActionListener(new JButtonObserver());
         add(boutons);
         boutons.setBackground(Color.red);
         actualiserInterface();
     }
 
     public void actualiserInterface() {
-        // à compléter
+        if (pile.estPleine())
+            push.setEnabled(false);
+        else
+            push.setEnabled(true);
+        if (pile.taille() <= 1) {
+            add.setEnabled(false);
+            sub.setEnabled(false);
+            mul.setEnabled(false);
+            div.setEnabled(false);
+        } else {
+            add.setEnabled(true);
+            sub.setEnabled(true);
+            mul.setEnabled(true);
+            div.setEnabled(true);
+        }
     }
 
     private Integer operande() throws NumberFormatException {
         return Integer.parseInt(donnee.getText());
     }
+    
+    public class JButtonObserver implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            String actionCommand = event.getActionCommand();
+            if (actionCommand.equals("push")) {
+                try {
+                    pile.empiler(operande());
+                } catch (PilePleineException e) {
+                    e.printStackTrace();
+                }
+            } else if (actionCommand.equals("[]")) {
+                while (!pile.estVide()) {
+                    try {
+                        pile.depiler();
+                    } catch (PileVideException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (actionCommand.equals("+")) {
+                int val1 = 0;
+                int val2 = 0;
+                try {
+                    val1 = pile.depiler();
+                    val2 = pile.depiler();
+                } catch (PileVideException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    pile.empiler(val2 + val1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (actionCommand.equals("-")) {
+                int val1 = 0;
+                int val2 = 0;
+                try {
+                    val1 = pile.depiler();
+                    val2 = pile.depiler();
+                } catch (PileVideException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    pile.empiler(val2 - val1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (actionCommand.equals("*")) {
+                int val1 = 0;
+                int val2 = 0;
+                try {
+                    val1 = pile.depiler();
+                    val2 = pile.depiler();
+                } catch (PileVideException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    pile.empiler(val2 * val1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (actionCommand.equals("/")) {
+                int val1 = 0;
+                int val2 = 0;
+                int res = 0;
+                boolean divisionZero = false;
+                
+                try {
+                    val1 = pile.depiler();
+                    val2 = pile.depiler();
+                    if(val1 == 0) divisionZero=true;
+                } catch (PileVideException e) {
+                    e.printStackTrace();
+                }
 
-    // à compléter
-    // en cas d'exception comme division par zéro, 
-    // mauvais format de nombre suite à l'appel de la méthode operande
-    // la pile reste en l'état (intacte)
+                try {
+                    if (divisionZero) {
+                        pile.empiler(null);               
+                    } else
+                        pile.empiler(val2/val1);
+                } catch (PilePleineException ppe) {
+                    ppe.printStackTrace();
+                }
 
+            }
+
+            actualiserInterface();
+        }
+    }
 }

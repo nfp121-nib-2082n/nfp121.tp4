@@ -10,10 +10,10 @@ import java.util.Observer;
 /**
  * Décrivez votre classe Controleur ici.
  * 
- * @author (votre nom)
- * @version (un numéro de version ou une date)
+ * @author (votre Charbel Abi Rizk )
+ * @version (14/6/2020)
  */
-public class Vue extends JPanel {// à compléter
+public class Vue extends JPanel implements Observer {
 
     private JLabel etatPile;
     private PileModele<Integer> pile;
@@ -23,13 +23,15 @@ public class Vue extends JPanel {// à compléter
         this.pile = pile;
         this.etatPile = new JLabel("entrez des nombres entiers");
         setLayout(new FlowLayout(FlowLayout.LEFT));
-        add(etatPile);
+        this.etatPile.setEnabled(false);
+        add(this.etatPile);
         setBackground(Color.green);
-        // inscription auprès du modèle comme observateur
+        pile.addObserver(this);
+        
     }
 
     public void update(Observable obs, Object arg) {
-        etatPile.setText(pile.toString()); // ou obs.toString()
+        etatPile.setText(pile.toString()); 
     }
 
 }
